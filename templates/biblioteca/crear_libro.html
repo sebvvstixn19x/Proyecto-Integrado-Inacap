@@ -15,21 +15,23 @@
                 {% for field in form %}
                 <div class="form-group">
                     <label class="form-label">{{ field.label }}</label>
+                    
+                    {# Renderiza el campo según su tipo #}
                     {% if field.field.widget.input_type == 'file' %}
-                    <input type="file" name="{{ field.name }}" class="form-control form-control-custom" accept="image/*">
-                    {% elif field.field.widget.input_type == 'select' or field.field.widget.attrs.class == 'form-select' %}
-                    <select name="{{ field.name }}" class="form-select form-select-custom">
-                        {% for choice in field.field.choices %}
-                        <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
-                        {% endfor %}
-                    </select>
-                    {% elif 'Textarea' in field.field.widget.__class__.__name__ %}
-                    <textarea name="{{ field.name }}" class="form-control form-control-custom" rows="4" placeholder="{{ field.label }}">{{ field.value|default_if_none:'' }}</textarea>
+                        {{ field }}
+                    
+                    {% elif field.field.widget.input_type == 'select' %}
+                        {{ field }}
+                    
+                    {% elif field.field.widget.input_type == 'textarea' %}
+                        {{ field }}
+                    
                     {% else %}
-                    <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}" class="form-control form-control-custom" value="{{ field.value|default_if_none:'' }}" placeholder="{{ field.label }}">
+                        {{ field }}
                     {% endif %}
+                    
                     {% if field.errors %}
-                    <small class="text-danger">{{ field.errors.0 }}</small>
+                        <small class="text-danger">{{ field.errors.0 }}</small>
                     {% endif %}
                 </div>
                 {% endfor %}
