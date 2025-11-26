@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header" data-aos="fade-up">
+            <div class="profile-cover"></div>
+            <div class="profile-info">
+                <div class="profile-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="profile-details">
+                    <h1 class="profile-name">{{ user.username }}</h1>
+                    <p class="profile-meta">
+                        <span class="profile-role {% if user.rol == 'admin' %}admin{% endif %}">
+                            <i class="bi {% if user.rol == 'admin' %}bi-shield-check{% else %}bi-person{% endif %} me-1"></i>
+                            {{ user.rol|title }}
+                        </span>
+                        <span class="profile-email"><i class="bi bi-envelope me-1"></i>{{ user.email }}</span>
+                    </p>
+                    {% if user.nombre %}
+                    <p class="profile-fullname"><i class="bi bi-person-badge me-1"></i>{{ user.first_name }} {{ user.last_name }}</p>
+                    {% endif %}
+                </div>
+                <div class="profile-actions">
+                    <a href="{% url 'editar_perfil' %}" class="btn btn-edit-profile">
+                        <i class="bi bi-pencil me-2"></i>Editar perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="row g-4 mt-4">
+            <!-- Reviews Section -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="bi bi-chat-quote me-2"></i>Mis Reseñas</h3>
+                        <span class="badge-count">{{ user.reseñas.count }}</span>
+                    </div>
+                    <div class="profile-card-body">
+                        {% if user.reseñas.all %}
+                        <div class="profile-list">
+                            {% for reseña in user.reseñas.all %}
+                            <div class="profile-list-item">
+                                <div class="profile-list-info">
+                                    <div class="profile-list-icon">
+                                        <i class="bi bi-book"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="profile-list-title">{{ reseña.libro.titulo }}</h5>
+                                        <div class="profile-list-rating">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= reseña.calificacion %}
+                                                <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                <i class="bi bi-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="profile-list-actions">
+                                    <a href="{% url 'detalle_libro' reseña.libro.id %}" class="btn btn-action-sm btn-view" title="Ver">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'editar_reseña' reseña.id %}" class="btn btn-action-sm btn-edit" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'eliminar_reseña' reseña.id %}" class="btn btn-action-sm btn-delete" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state-mini">
+                            <i class="bi bi-chat-quote"></i>
+                            <p>Aún no has publicado reseñas.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Favorites Section -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="150">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="bi bi-heart me-2"></i>Mis Favoritos</h3>
+                        <span class="badge-count">{{ user.favoritos.count }}</span>
+                    </div>
+                    <div class="profile-card-body">
+                        {% if user.favoritos.all %}
+                        <div class="profile-list">
+                            {% for fav in user.favoritos.all %}
+                            <div class="profile-list-item">
+                                <div class="profile-list-info">
+                                    <div class="profile-list-icon favorite">
+                                        <i class="bi bi-heart-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="profile-list-title">{{ fav.libro.titulo }}</h5>
+                                        <p class="profile-list-subtitle">{{ fav.libro.autor }}</p>
+                                    </div>
+                                </div>
+                                <div class="profile-list-actions">
+                                    <a href="{% url 'detalle_libro' fav.libro.id %}" class="btn btn-action-sm btn-view" title="Ver">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'quitar_favorito' fav.libro.id %}" class="btn btn-action-sm btn-delete" title="Quitar">
+                                        <i class="bi bi-heart-break"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state-mini">
+                            <i class="bi bi-heart"></i>
+                            <p>No tienes libros en favoritos.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Section -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="bi bi-flag me-2"></i>Mis Reportes</h3>
+                        <span class="badge-count">{{ user.reportes.count }}</span>
+                    </div>
+                    <div class="profile-card-body">
+                        {% if user.reportes.all %}
+                        <div class="profile-list">
+                            {% for reporte in user.reportes.all %}
+                            <div class="profile-list-item">
+                                <div class="profile-list-info">
+                                    <div class="profile-list-icon {% if reporte.revisado %}resolved{% else %}pending{% endif %}">
+                                        <i class="bi bi-flag"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="profile-list-title">{{ reporte.get_motivo_display }}</h5>
+                                        <p class="profile-list-subtitle">{{ reporte.fecha|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                </div>
+                                <span class="status-badge {% if reporte.revisado %}resolved{% else %}pending{% endif %}">
+                                    {% if reporte.revisado %}
+                                    <i class="bi bi-check-circle me-1"></i>Resuelto
+                                    {% else %}
+                                    <i class="bi bi-clock me-1"></i>Pendiente
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state-mini">
+                            <i class="bi bi-flag"></i>
+                            <p>No has enviado reportes.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lists Section -->
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="250">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="bi bi-collection me-2"></i>Mis Listas Temáticas</h3>
+                        <span class="badge-count">{{ user.listas.count }}</span>
+                    </div>
+                    <div class="profile-card-body">
+                        {% if user.listas.all %}
+                        <div class="profile-list">
+                            {% for lista in user.listas.all %}
+                            <div class="profile-list-item">
+                                <div class="profile-list-info">
+                                    <div class="profile-list-icon list">
+                                        <i class="bi bi-list-ul"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="profile-list-title">{{ lista.nombre }}</h5>
+                                        <p class="profile-list-subtitle">{{ lista.libros.count }} libros</p>
+                                    </div>
+                                </div>
+                                <div class="profile-list-actions">
+                                    <a href="{% url 'detalle_lista' lista.id %}" class="btn btn-action-sm btn-view" title="Ver">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'editar_lista' lista.id %}" class="btn btn-action-sm btn-edit" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'eliminar_lista' lista.id %}" class="btn btn-action-sm btn-delete" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state-mini">
+                            <i class="bi bi-collection"></i>
+                            <p>No has creado listas aún.</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="profile-card-footer">
+                            <a href="{% url 'crear_lista' %}" class="btn btn-create-list">
+                                <i class="bi bi-plus-lg me-2"></i>Crear nueva lista
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- History Section -->
+            <div class="col-12" data-aos="fade-up" data-aos-delay="300">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="bi bi-clock-history me-2"></i>Mi Historial</h3>
+                        <a href="{% url 'ver_historial' %}" class="btn btn-view-all">
+                            Ver todo <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buscar Libros - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="search-section" style="padding-top: 120px; padding-bottom: 40px;">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-badge">Buscar</span>
+            <h2 class="section-title">Encuentra tu próxima lectura</h2>
+        </div>
+        
+        <div class="search-container" data-aos="fade-up">
+            <form class="search-form" method="GET">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por título, autor o género..." value="{{ query }}">
+                <button type="submit" class="btn btn-search">
+                    <i class="bi bi-search"></i>
+                    Buscar
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="books-section" style="padding-top: 40px;">
+    <div class="container">
+        {% if query %}
+        <p class="text-muted mb-4" data-aos="fade-up">
+            Resultados para: <strong class="text-accent">"{{ query }}"</strong>
+        </p>
+        {% endif %}
+        
+        {% if resultados %}
+        <div class="books-grid">
+            {% for libro in resultados %}
+            <div class="book-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                <div class="book-card-image">
+                    {% if libro.portada %}
+                    <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}">
+                    {% else %}
+                    <img src="/placeholder.svg?height=300&width=280" alt="{{ libro.titulo }}">
+                    {% endif %}
+                    <div class="book-card-overlay">
+                        <div class="book-quick-actions">
+                            <a href="{% url 'detalle_libro' libro.id %}" class="btn-quick-action" title="Ver detalles">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'agregar_favorito' libro.id %}" class="btn-quick-action" title="Agregar a favoritos">
+                                <i class="bi bi-heart"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="book-card-body">
+                    <span class="book-genre">{{ libro.genero|title }}</span>
+                    <h4 class="book-title">{{ libro.titulo }}</h4>
+                    <p class="book-author"><i class="bi bi-person me-1"></i>{{ libro.autor }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" data-aos="fade-up">
+            <i class="bi bi-search empty-state-icon"></i>
+            <h4>No se encontraron resultados</h4>
+            <p>Intenta con otros términos de búsqueda</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

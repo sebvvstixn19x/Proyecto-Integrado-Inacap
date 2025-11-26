@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Librería Digital{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <span class="hero-badge">
+                        <i class="bi bi-stars"></i>
+                        Más de 10,000 títulos disponibles
+                    </span>
+                    <h1 class="hero-title">
+                        Descubre mundos 
+                        <span class="highlight">infinitos</span> 
+                        en cada página
+                    </h1>
+                    <p class="hero-description">
+                        Tu portal hacia la lectura. Explora nuestra colección, 
+                        comparte reseñas y conecta con otros amantes de los libros.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'lista_libros' %}" class="btn btn-hero btn-hero-primary">
+                            <i class="bi bi-collection"></i>
+                            Explorar Catálogo
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'crear_lista' %}" class="btn btn-hero btn-hero-secondary">
+                            <i class="bi bi-plus-circle"></i>
+                            Crear Lista
+                        </a>
+                        {% else %}
+                        <a href="{% url 'registro' %}" class="btn btn-hero btn-hero-secondary">
+                            <i class="bi bi-person-plus"></i>
+                            Únete Gratis
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">10K+</span>
+                            <span class="stat-label">Libros</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">5K+</span>
+                            <span class="stat-label">Usuarios</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">15K+</span>
+                            <span class="stat-label">Reseñas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-visual">
+                    <div class="floating-books">
+                        <div class="floating-book">
+                            <img src="/placeholder.svg?height=300&width=200" alt="Libro destacado">
+                        </div>
+                        <div class="floating-book">
+                            <img src="/placeholder.svg?height=280&width=180" alt="Libro destacado">
+                        </div>
+                        <div class="floating-book">
+                            <img src="/placeholder.svg?height=260&width=170" alt="Libro destacado">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admin Panel (if admin) -->
+{% if user.is_authenticated and user.rol == 'admin' %}
+<section class="py-4">
+    <div class="container">
+        <div class="admin-panel-hero" data-aos="fade-up">
+            <h3><i class="bi bi-shield-check"></i> Panel de Administrador</h3>
+            <p class="text-muted mb-0">Accede a las herramientas de gestión y moderación del sistema.</p>
+            <div class="admin-actions">
+                <a href="{% url 'panel_moderacion' %}" class="btn btn-admin">
+                    <i class="bi bi-flag me-2"></i>Panel de Moderación
+                </a>
+                <a href="{% url 'crear_libro' %}" class="btn btn-admin">
+                    <i class="bi bi-plus-lg me-2"></i>Agregar Libro
+                </a>
+                <a href="{% url 'crear_categoria' %}" class="btn btn-admin">
+                    <i class="bi bi-folder-plus me-2"></i>Crear Categoría
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Books Carousel -->
+{% if libros_destacados %}
+<section class="featured-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-badge">Destacados</span>
+            <h2 class="section-title">Libros del Momento</h2>
+            <p class="section-description">
+                Descubre las obras más populares seleccionadas por nuestra comunidad
+            </p>
+        </div>
+        
+        <div id="featuredCarousel" class="carousel slide featured-carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for libro in libros_destacados %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <div class="featured-book-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                        <div class="featured-book-image">
+                            {% if libro.portada %}
+                            <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}">
+                            {% else %}
+                            <img src="/placeholder.svg?height=350&width=250" alt="{{ libro.titulo }}">
+                            {% endif %}
+                        </div>
+                        <div class="featured-book-info">
+                            <h3>{{ libro.titulo }}</h3>
+                            <p class="featured-author">{{ libro.autor }}</p>
+                            <span class="featured-genre">{{ libro.genero|title }}</span>
+                            <p class="featured-description">
+                                {{ libro.descripcion|truncatewords:40|default:"Una obra fascinante que te transportará a nuevos mundos llenos de aventura y emoción." }}
+                            </p>
+                            <a href="{% url 'detalle_libro' libro.id %}" class="btn btn-featured">
+                                Ver más <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+            <div class="carousel-indicators">
+                {% for libro in libros_destacados %}
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Search Section -->
+<section class="search-section">
+    <div class="container">
+        <div class="search-container" data-aos="fade-up">
+            <form class="search-form" action="{% url 'buscar_libros' %}" method="GET">
+                <input type="text" name="q" class="form-control" placeholder="Buscar por título, autor o género...">
+                <button type="submit" class="btn btn-search">
+                    <i class="bi bi-search"></i>
+                    Buscar
+                </button>
+            </form>
+            
+            <div class="categories-filter">
+                {% for categoria in categorias %}
+                <button type="button" class="category-btn {% if forloop.first %}active{% endif %}">
+                    {{ categoria }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Books -->
+<section class="books-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-badge">Novedades</span>
+            <h2 class="section-title">Libros Recientes</h2>
+            <p class="section-description">
+                Las últimas incorporaciones a nuestra biblioteca digital
+            </p>
+        </div>
+        
+        <div class="books-grid">
+            {% for libro in libros_recientes %}
+            <div class="book-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                <div class="book-card-image">
+                    {% if libro.portada %}
+                    <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}">
+                    {% else %}
+                    <img src="/placeholder.svg?height=300&width=280" alt="{{ libro.titulo }}">
+                    {% endif %}
+                    <div class="book-card-overlay">
+                        <div class="book-quick-actions">
+                            <a href="{% url 'detalle_libro' libro.id %}" class="btn-quick-action" title="Ver detalles">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'agregar_favorito' libro.id %}" class="btn-quick-action" title="Agregar a favoritos">
+                                <i class="bi bi-heart"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="book-card-body">
+                    <span class="book-genre">{{ libro.genero|title }}</span>
+                    <h4 class="book-title">{{ libro.titulo }}</h4>
+                    <p class="book-author"><i class="bi bi-person me-1"></i>{{ libro.autor }}</p>
+                    <div class="book-rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                        <span>(4.5)</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-book empty-state-icon"></i>
+                    <h4>Aún no hay libros cargados</h4>
+                    <p>Vuelve pronto para descubrir nuevas lecturas</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="{% url 'lista_libros' %}" class="btn btn-hero btn-hero-secondary">
+                Ver todo el catálogo <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Recent History (if authenticated) -->
+{% if user.is_authenticated and user.historial_libros.all %}
+<section class="py-5" style="background: var(--primary-dark);">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-badge">Tu Actividad</span>
+            <h2 class="section-title">Continúa leyendo</h2>
+        </div>
+        
+        <div class="row g-4">
+            {% for h in user.historial_libros.all|slice:":5" %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                <div class="profile-list-item">
+                    <div class="profile-list-info">
+                        <div class="profile-list-icon">
+                            <i class="bi bi-book"></i>
+                        </div>
+                        <div>
+                            <h5 class="profile-list-title">{{ h.libro.titulo }}</h5>
+                            <p class="profile-list-subtitle">{{ h.fecha|date:"d/m/Y H:i" }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'detalle_libro' h.libro.id %}" class="btn btn-action-sm btn-view">
+                        Ver
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

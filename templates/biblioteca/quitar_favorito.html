@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Quitar Favorito - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="confirm-card" data-aos="fade-up">
+                    <div class="confirm-icon warning">
+                        <i class="bi bi-heart-break"></i>
+                    </div>
+                    <h2 class="confirm-title">Quitar de favoritos</h2>
+                    <p class="confirm-message">
+                        ¿Estás seguro de que deseas quitar <strong>"{{ favorito.libro.titulo }}"</strong> de tus favoritos?
+                    </p>
+                    
+                    <form method="POST" class="confirm-actions">
+                        {% csrf_token %}
+                        <a href="{% url 'perfil' %}" class="btn btn-secondary-custom">
+                            <i class="bi bi-x-lg me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning-custom">
+                            <i class="bi bi-heart-break me-2"></i>Sí, quitar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

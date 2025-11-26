@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ libro.titulo }} - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="book-detail-section">
+    <div class="container">
+        <div class="book-detail-card" data-aos="fade-up">
+            <div class="row g-0">
+                <div class="col-lg-4">
+                    <div class="book-detail-image p-4">
+                        {% if libro.portada %}
+                        <img src="{{ libro.portada.url }}" alt="{{ libro.titulo }}">
+                        {% else %}
+                        <img src="/placeholder.svg?height=500&width=350" alt="{{ libro.titulo }}">
+                        {% endif %}
+                        <span class="book-detail-badge">{{ libro.genero|title }}</span>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="book-detail-content">
+                        <h1 class="book-detail-title">{{ libro.titulo }}</h1>
+                        
+                        <div class="book-detail-meta">
+                            <div class="meta-item">
+                                <i class="bi bi-person"></i>
+                                <span>{{ libro.autor }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="bi bi-bookmark"></i>
+                                <span>{{ libro.genero|title }}</span>
+                            </div>
+                            {% if libro.fecha_publicacion %}
+                            <div class="meta-item">
+                                <i class="bi bi-calendar"></i>
+                                <span>{{ libro.fecha_publicacion }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="book-description">
+                            {{ libro.descripcion|default:"Este libro aún no tiene una descripción disponible. ¡Pero estamos seguros de que te encantará explorarlo!" }}
+                        </p>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="book-actions">
+                            {% if es_favorito %}
+                            <span class="btn btn-favorite is-favorite">
+                                <i class="bi bi-heart-fill"></i> Ya en favoritos
+                            </span>
+                            {% else %}
+                            <a href="{% url 'agregar_favorito' libro.id %}" class="btn btn-favorite">
+                                <i class="bi bi-heart"></i> Agregar a favoritos
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="reviews-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h2 class="section-title mb-4" data-aos="fade-up">
+                    <i class="bi bi-chat-quote text-accent me-2"></i>Reseñas
+                </h2>
+                
+                {% if reseñas %}
+                {% for reseña in reseñas %}
+                <div class="review-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                    <div class="review-header">
+                        <div class="reviewer-info">
+                            <div class="reviewer-avatar">
+                                {{ reseña.usuario.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <h5 class="reviewer-name">{{ reseña.usuario.username }}</h5>
+                                <span class="review-date">{{ reseña.fecha|date:"d/m/Y H:i" }}</span>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= reseña.calificacion %}
+                                <i class="bi bi-star-fill"></i>
+                                {% else %}
+                                <i class="bi bi-star" style="color: var(--gray-600);"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <p class="review-content">{{ reseña.comentario }}</p>
+                    <div class="review-actions">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'reportar_reseña' reseña.id %}" class="btn-review-action">
+                            <i class="bi bi-flag me-1"></i>Reportar
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state" data-aos="fade-up">
+                    <i class="bi bi-chat-dots empty-state-icon"></i>
+                    <h4>Sin reseñas todavía</h4>
+                    <p>¡Sé el primero en compartir tu opinión!</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-lg-4">
+                {% if user.is_authenticated and user.is_usuario %}
+                <div class="review-form-card" data-aos="fade-up">
+                    <h3 class="review-form-title">
+                        <i class="bi bi-pencil-square text-accent"></i>
+                        Escribir reseña
+                    </h3>
+                    <form method="POST" action="{% url 'crear_reseña' libro.id %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label">Tu comentario</label>
+                            <textarea name="comentario" class="form-control form-control-custom" rows="4" placeholder="Comparte tu opinión sobre este libro..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Calificación</label>
+                            <select name="calificacion" id="calificacion" class="form-select form-select-custom" required>
+                                <option value="1">1 ⭐</option>
+                                <option value="2">2 ⭐</option>
+                                <option value="3">3 ⭐</option>
+                                <option value="4">4 ⭐</option>
+                                <option value="5" selected>5 ⭐</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-submit w-100">
+                            <i class="bi bi-send"></i>
+                            Publicar reseña
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Moderación - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="moderation-section">
+    <div class="container">
+        <!-- Moderation Header -->
+        <div class="moderation-header" data-aos="fade-up">
+            <div class="moderation-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h1 class="moderation-title">Panel de Moderación</h1>
+            <p class="moderation-subtitle">Gestiona los reportes y mantén la comunidad segura</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-card pending">
+                    <div class="stat-card-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>{{ reportes_pendientes|length }}</h3>
+                        <p>Reportes Pendientes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="150">
+                <div class="stat-card resolved">
+                    <div class="stat-card-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>{{ reportes_resueltos|length }}</h3>
+                        <p>Reportes Resueltos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-card total">
+                    <div class="stat-card-icon">
+                        <i class="bi bi-flag"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>{{ reportes_pendientes|length|add:reportes_resueltos|length }}</h3>
+                        <p>Total de Reportes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pending Reports -->
+        <div class="moderation-card" data-aos="fade-up">
+            <div class="moderation-card-header pending">
+                <h3><i class="bi bi-exclamation-circle me-2"></i>Reportes Pendientes</h3>
+            </div>
+            <div class="moderation-card-body">
+                {% if reportes_pendientes %}
+                <div class="table-responsive">
+                    <table class="moderation-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Motivo</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reporte in reportes_pendientes %}
+                            <tr data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:50 }}">
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-sm">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <span>{{ reporte.usuario.username }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="motivo-badge {{ reporte.motivo }}">
+                                        {{ reporte.get_motivo_display }}
+                                    </span>
+                                </td>
+                                <td>{{ reporte.fecha|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'resolver_reporte' reporte.id %}" class="btn btn-action btn-review">
+                                        <i class="bi bi-search me-1"></i>Revisar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-check-circle empty-state-icon success"></i>
+                    <h4>¡Todo en orden!</h4>
+                    <p>No hay reportes pendientes por revisar.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Resolved Reports -->
+        <div class="moderation-card mt-4" data-aos="fade-up">
+            <div class="moderation-card-header resolved">
+                <h3><i class="bi bi-check-circle me-2"></i>Reportes Resueltos</h3>
+            </div>
+            <div class="moderation-card-body">
+                {% if reportes_resueltos %}
+                <div class="table-responsive">
+                    <table class="moderation-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Motivo</th>
+                                <th>Fecha</th>
+                                <th>Acción aplicada</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reporte in reportes_resueltos %}
+                            <tr>
+                                <td>
+                                    <div class="user-cell">
+                                        <div class="user-avatar-sm">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <span>{{ reporte.usuario.username }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="motivo-badge {{ reporte.motivo }}">
+                                        {{ reporte.get_motivo_display }}
+                                    </span>
+                                </td>
+                                <td>{{ reporte.fecha|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    {% if reporte.acciones.last %}
+                                    <span class="action-badge {{ reporte.acciones.last.accion }}">
+                                        {{ reporte.acciones.last.get_accion_display }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted">Sin acción registrada</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-inbox empty-state-icon"></i>
+                    <h4>Sin historial</h4>
+                    <p>No hay reportes resueltos aún.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

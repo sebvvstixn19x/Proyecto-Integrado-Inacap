@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Historial - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="history-section">
+    <div class="container">
+        <div class="history-header" data-aos="fade-up">
+            <h1 class="section-title">
+                <i class="bi bi-clock-history text-accent me-3"></i>
+                Historial de Lecturas
+            </h1>
+            <p class="section-description">
+                Libros que has consultado recientemente
+            </p>
+        </div>
+        
+        {% if historial %}
+        <div class="history-list" data-aos="fade-up">
+            {% for registro in historial %}
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <div>
+                        <h5 class="history-title">{{ registro.libro.titulo }}</h5>
+                        <span class="history-date">{{ registro.fecha|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'detalle_libro' registro.libro.id %}" class="btn btn-action-sm btn-view">
+                    <i class="bi bi-eye me-1"></i>Ver
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" data-aos="fade-up">
+            <i class="bi bi-clock-history empty-state-icon"></i>
+            <h4>Historial vacío</h4>
+            <p>Aún no has consultado ningún libro</p>
+            <a href="{% url 'lista_libros' %}" class="btn btn-primary-custom mt-3">
+                <i class="bi bi-collection me-2"></i>Explorar catálogo
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Reseña - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="confirm-card" data-aos="fade-up">
+                    <div class="confirm-icon danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <h2 class="confirm-title">Eliminar Reseña</h2>
+                    <p class="confirm-message">
+                        ¿Estás seguro de que deseas eliminar tu reseña de <strong>"{{ reseña.libro.titulo }}"</strong>?
+                    </p>
+                    <p class="confirm-warning">Esta acción no se puede deshacer.</p>
+                    
+                    <form method="POST" class="confirm-actions">
+                        {% csrf_token %}
+                        <a href="{% url 'perfil' %}" class="btn btn-secondary-custom">
+                            <i class="bi bi-x-lg me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger-custom">
+                            <i class="bi bi-trash me-2"></i>Sí, eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

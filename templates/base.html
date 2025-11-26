@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>{% block title %}Librería Digital{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top glass-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'homeGeneral' %}">
+                <span class="brand-icon"><i class="bi bi-book-half"></i></span>
+                <span class="brand-text">Librería<span class="brand-accent">Digital</span></span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'lista_libros' %}">
+                            <i class="bi bi-collection me-1"></i>Catálogo
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'buscar_libros' %}">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'perfil' %}">
+                            <i class="bi bi-person-circle me-1"></i>Mi Perfil
+                        </a>
+                    </li>
+                    {% if user.rol == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-admin" href="{% url 'panel_moderacion' %}">
+                            <i class="bi bi-shield-check me-1"></i>Moderación
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                
+                <div class="navbar-actions">
+                    {% if user.is_authenticated %}
+                    <div class="user-dropdown dropdown">
+                        <button class="btn btn-user dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="user-avatar"><i class="bi bi-person-fill"></i></span>
+                            <span class="user-name">{{ user.username }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end glass-dropdown">
+                            <li><a class="dropdown-item" href="{% url 'perfil' %}"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+                            <li><a class="dropdown-item" href="{% url 'ver_historial' %}"><i class="bi bi-clock-history me-2"></i>Historial</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-nav me-2">Iniciar Sesión</a>
+                    <a href="{% url 'registro' %}" class="btn btn-primary-custom btn-nav">Crear Cuenta</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-custom alert-{{ message.tags }} alert-dismissible fade show" role="alert" data-aos="fade-down">
+            <i class="bi {% if message.tags == 'success' %}bi-check-circle{% elif message.tags == 'error' %}bi-x-circle{% elif message.tags == 'warning' %}bi-exclamation-triangle{% else %}bi-info-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="footer-brand">
+                        <span class="brand-icon"><i class="bi bi-book-half"></i></span>
+                        <span class="brand-text">Librería<span class="brand-accent">Digital</span></span>
+                    </div>
+                    <p class="footer-description">
+                        Tu portal hacia mundos infinitos de conocimiento y aventura. 
+                        Descubre, lee y comparte historias que transforman.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Explorar</h5>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'lista_libros' %}">Catálogo</a></li>
+                        <li><a href="{% url 'buscar_libros' %}">Buscar</a></li>
+                        <li><a href="#">Novedades</a></li>
+                        <li><a href="#">Populares</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4 mb-md-0">
+                    <h5 class="footer-title">Géneros</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Romance</a></li>
+                        <li><a href="#">Ciencia Ficción</a></li>
+                        <li><a href="#">Fantasía</a></li>
+                        <li><a href="#">Misterio</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="footer-title">Newsletter</h5>
+                    <p class="footer-description">Recibe las últimas novedades de nuestra Tienda.</p>
+                    <form class="newsletter-form">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Tu correo electrónico">
+                            <button class="btn btn-primary-custom" type="submit">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Librería Digital — Proyecto universitario de Proyecto integrado</p>
+                <div class="footer-legal">
+                    <a href="#">Términos</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Registro - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+            <div class="col-lg-5 col-md-7">
+                <div class="auth-card" data-aos="fade-up">
+                    <div class="auth-header">
+                        <a href="{% url 'homeGeneral' %}" class="auth-logo">
+                            <i class="bi bi-book-half"></i>
+                            <span>Librería<span class="accent">Digital</span></span>
+                        </a>
+                        <h2 class="auth-title">Crear cuenta</h2>
+                        <p class="auth-subtitle">Únete a nuestra comunidad de lectores</p>
+                    </div>
+                    
+                    <form method="POST" class="auth-form">
+                        {% csrf_token %}
+                        
+                        <div class="django-form-wrapper">
+                            {{ form.as_p }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-submit btn-block">
+                            <i class="bi bi-person-plus me-2"></i>Crear cuenta
+                        </button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        <p class="auth-link">
+                            ¿Ya tienes cuenta? 
+                            <a href="{% url 'login' %}">Inicia sesión aquí</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Decorative Elements -->
+    <div class="auth-decoration">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+</section>
+{% endblock %}

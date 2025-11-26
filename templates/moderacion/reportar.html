@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reportar Contenido - Librería Digital{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="form-card" data-aos="fade-up">
+                    <div class="form-card-header">
+                        <div class="form-icon warning">
+                            <i class="bi bi-flag"></i>
+                        </div>
+                        <h2 class="form-title">Reportar contenido</h2>
+                        <p class="form-subtitle">Ayúdanos a mantener la comunidad segura</p>
+                    </div>
+                    
+                    <div class="form-card-body">
+                        <form method="POST" class="modern-form">
+                            {% csrf_token %}
+                            
+                            <div class="django-form-wrapper">
+                                {{ form.as_p }}
+                            </div>
+                            
+                            <div class="form-actions">
+                                <a href="javascript:history.back()" class="btn btn-secondary-custom">
+                                    <i class="bi bi-x-lg me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-warning-custom">
+                                    <i class="bi bi-flag me-2"></i>Enviar reporte
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
